@@ -8,6 +8,7 @@ Tekst = [ 0x54, 0x65, 0x6d, 0x70, 0x3d ]
 ROMCODE1 = [ 0x28, 0xc3, 0xc2, 0x9d, 0x04, 0x00, 0x00, 0x9b]
 iROMCODE1 = [ 40, 195, 194, 157, 4, 0, 0, 155]
 
+
 def I2CWrite(value1) :
     I2CMaster().transaction( writing_bytes(address, value1) )
     time.sleep(0.1)
