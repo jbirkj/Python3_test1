@@ -19,7 +19,7 @@ def I2CRead():
     time.sleep(1)
     return read
 
-print('starting....')
+print('starting...')
 
 path = "./DS18b20read.a "
 parse = path + repr(ROMCODE1)
