@@ -1,5 +1,8 @@
 
-import time
+import time, sys
+
+sys.path.append("/home/pi/quick2wire-python-api")
+
 from subprocess import Popen, PIPE
 from quick2wire.i2c import I2CMaster, writing_bytes, reading
 
