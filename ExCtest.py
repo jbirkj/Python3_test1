@@ -9,8 +9,11 @@ from quick2wire.i2c import I2CMaster, writing_bytes, reading
 
 address = 0x28
 Tekst = [ 0x54, 0x65, 0x6d, 0x70, 0x3d ]
+Tekst2 = [  ]
 ROMCODE1 = [ 0x28, 0xc3, 0xc2, 0x9d, 0x04, 0x00, 0x00, 0x9b]
 sRomCode1 = "40 195 194 157 4 0 0 155"
+ROMCODE5 = [ 0x28, 0xe8, 0xd4, 0x45, 0x05, 0x00, 0x00, 0x83]
+sRomCode5 = "40 232 212 69 5 0 0 131"
 
 def I2CWrite(value1) :
     I2CMaster().transaction( writing_bytes(address, value1) )
@@ -33,20 +36,30 @@ except:
 
 wks = gs.open("TempLog1").sheet1
 
-path = "./DS18b20read.a " + sRomCode1
-print(path)
+path = "./DS18b20read.a "
+path1 = path + sRomCode1
+path2 = path + sRomCode5
+print(path1)
+print(path2)
  
 #proc = Popen(["sudo ./DS18b20read.a "],
-proc = Popen(path ,
+proc = Popen(path1 ,
              shell=True, 
             stdout=PIPE)
 stdoutvalue = proc.communicate()
 TempRead1 = eval(stdoutvalue[0])
-print("current temperature is ", TempRead1, "degree Celsius" )
+print("current temperature 1 is ", TempRead1, "degree Celsius" )
+
+proc = Popen(path2 ,
+             shell=True, 
+            stdout=PIPE)
+stdoutvalue = proc.communicate()
+TempRead2 = eval(stdoutvalue[0])
+print("current temperature 2 is ", TempRead2, "degree Celsius" )
 
 #writing to Google sheet
-values = [ datetime.datetime.now(), 'sensor1',
-           eval(stdoutvalue[0]), eval(stdoutvalue[0])+5 ]
+values = [ datetime.datetime.now(), 'sensor',
+           TempRead1, TempRead2 ]
 wks.append_row(values)
 
 
@@ -57,9 +70,22 @@ I2CWrite(0x58)
 for a in range(len(Tekst)):
     I2CWrite(Tekst[a])
 
-I2CWrite(0x30+(int(eval(stdoutvalue[0])/10)))
-I2CWrite(0x30+eval(stdoutvalue[0])%10)
-         
+#I2CWrite(0x30+(int(eval(stdoutvalue[0])/10)))
+#I2CWrite(0x30+eval(stdoutvalue[0])%10)
+I2CWrite(0x30+(int(TempRead1/10)))
+I2CWrite(0x30+TempRead1%10)
+
+#set curseor to start of line 2
+I2CWrite(0xFE) #command prefix
+I2CWrite(0x47) #"go to position"        
+I2CWrite(0x01) #column point
+I2CWrite(0x02) #row point
+
+for a in range(len(Tekst)):
+    I2CWrite(Tekst[a])
+
+I2CWrite(0x30+(int(TempRead2/10)))
+I2CWrite(0x30+TempRead2%10)
 
 print( "Goodbye")
 var=0
