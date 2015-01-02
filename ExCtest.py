@@ -8,8 +8,8 @@ from subprocess import Popen, PIPE
 from quick2wire.i2c import I2CMaster, writing_bytes, reading
 
 address = 0x28
-Tekst = [ 0x54, 0x65, 0x6d, 0x70, 0x3d ]
-Tekst2 = [  ]
+Tekst = [ 0x54, 0x65, 0x6d, 0x70, 0x31, 0x3d ]
+Tekst2 = [ 0xfe, 0x47, 0x01, 0x02, 0x54, 0x65, 0x6d, 0x70, 0x32, 0x3d ]
 ROMCODE1 = [ 0x28, 0xc3, 0xc2, 0x9d, 0x04, 0x00, 0x00, 0x9b]
 sRomCode1 = "40 195 194 157 4 0 0 155"
 ROMCODE5 = [ 0x28, 0xe8, 0xd4, 0x45, 0x05, 0x00, 0x00, 0x83]
@@ -67,23 +67,15 @@ wks.append_row(values)
 I2CWrite(0xFE)
 I2CWrite(0x58)
 
+# writing LCD line1 with temp1
 for a in range(len(Tekst)):
     I2CWrite(Tekst[a])
+I2CWrite(0x30+(int(TempRead1/10)))      #I2CWrite(0x30+(int(eval(stdoutvalue[0])/10)))
+I2CWrite(0x30+TempRead1%10)             #I2CWrite(0x30+eval(stdoutvalue[0])%10)
 
-#I2CWrite(0x30+(int(eval(stdoutvalue[0])/10)))
-#I2CWrite(0x30+eval(stdoutvalue[0])%10)
-I2CWrite(0x30+(int(TempRead1/10)))
-I2CWrite(0x30+TempRead1%10)
-
-#set curseor to start of line 2
-I2CWrite(0xFE) #command prefix
-I2CWrite(0x47) #"go to position"        
-I2CWrite(0x01) #column point
-I2CWrite(0x02) #row point
-
-for a in range(len(Tekst)):
-    I2CWrite(Tekst[a])
-
+# writing LCD line 2 with Temp2
+for a in range(len(Tekst2)):
+    I2CWrite(Tekst2[a])
 I2CWrite(0x30+(int(TempRead2/10)))
 I2CWrite(0x30+TempRead2%10)
 
