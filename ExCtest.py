@@ -27,17 +27,20 @@ def I2CRead():
     time.sleep(1)
     return read
 
-print('starting...')    #printing in prompt
-
-root = Tk()
-
-try:
+def GoogleSubmit(value1, value2):
+    try:
     gs = gspread.login('jesperbirkp@gmail.com', 'zxkfdgmtpslbqpzg')
-except:
-    print('fail')
-    sys.exit
+    except:
+        print('fail')
+        sys.exit
+    wks = gs.open("TempLog1").sheet1
+    
+    #writing to Google sheet
+    values = [ datetime.datetime.now(), 'sensor', value1, value2]
+    wks.append_row(values)
 
-wks = gs.open("TempLog1").sheet1
+print('starting...')    #printing in prompt
+root = Tk()
 
 path = "./DS18b20read.a "
 path1 = path + sRomCode1
@@ -60,10 +63,7 @@ stdoutvalue = proc.communicate()
 TempRead2 = eval(stdoutvalue[0])
 print("current temperature 2 is ", TempRead2, "degree Celsius" )
 
-#writing to Google sheet
-values = [ datetime.datetime.now(), 'sensor',
-           TempRead1, TempRead2 ]
-wks.append_row(values)
+#GoogleSubmit(TempRead1, TempRead2)
 
 #write to GUI
 label_1 = Label(root, text="Temperatur 1")
@@ -84,9 +84,9 @@ label_5.grid(row=2, column=0)
 label_6.grid(row=2, column=1)
 
 c = Checkbutton(root, text="checkbox ")
-c.grid(columnspan=2)
-
-
+c.grid(row=3, columnspan=2)
+b = Button(root, text="Submit to Google Sheet", command=GoogleSubmit(TempRead1,TempRead2))
+b.grid.(row=4)
 
 # Write to LCD - clear displa and move cursor to start
 I2CWrite(0xFE)
