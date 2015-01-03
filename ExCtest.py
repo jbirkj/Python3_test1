@@ -91,7 +91,7 @@ label_6.grid(row=2, column=1)
 c = Checkbutton(topFrame, text="checkbox ")
 c.grid(row=3, columnspan=2)
 b = Button(topFrame, text="Submit to Google Sheet", command=GoogleSubmit(TempRead1,TempRead2))
-b.grid.(row=4)
+b.grid(row=4)
 
 t = Text(bottomFrame, height=10, width=30)
 t.pack()
