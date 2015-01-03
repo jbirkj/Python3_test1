@@ -81,7 +81,7 @@ label_4.grid(row=1, column=1)
 entry_1.grid(row=0, column=2)
 entry_2.grid(row=1, column=2)
 label_5.grid(row=2, column=0)
-label_6.grid(row=3, column=1)
+label_6.grid(row=2, column=1)
 
 c = Checkbutton(root, text="checkbox ")
 c.grid(columnspan=2)
