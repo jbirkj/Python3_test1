@@ -72,15 +72,18 @@ label_3 = Label(root, text=TempRead1)
 label_4 = Label(root, text=TempRead2)
 entry_1 = Entry(root)
 entry_2 = Entry(root)
-
+label_5 = Label(root, text="Logged at :")
+label_6 = Label(root, text=datetime.datetime.now() )
 label_1.grid(row=0, sticky=E)
 label_2.grid(row=1, sticky=E)
 label_3.grid(row=0, column=1)
 label_4.grid(row=1, column=1)
 entry_1.grid(row=0, column=2)
 entry_2.grid(row=1, column=2)
+label_5.grid(row=2, column=0)
+label_6.grid(row=3, column=1)
 
-c = Checkbutton(root, text="logged at " datetime.datetime.now())
+c = Checkbutton(root, text="checkbox ")
 c.grid(columnspan=2)
 
 
