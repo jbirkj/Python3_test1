@@ -31,19 +31,6 @@ print('starting...')    #printing in prompt
 
 root = Tk()
 
-label_1 = Label(root, text="Temperatur 1")
-label_2 = Label(root, text="Temperatur 2")
-entry_1 = Entry(root)
-entry_2 = Entry(root)
-
-label_1.grid(row=0, sticky=E)
-label_2.grid(row=1, sticky=E)
-entry_1.grid(row=0, column=1)
-entry_2.grid(row=1, column=1)
-
-c = Checkbutton(root, text="logged at")
-c.grid(columnspan=2
-
 try:
     gs = gspread.login('jesperbirkp@gmail.com', 'zxkfdgmtpslbqpzg')
 except:
@@ -78,8 +65,27 @@ values = [ datetime.datetime.now(), 'sensor',
            TempRead1, TempRead2 ]
 wks.append_row(values)
 
+#write to GUI
+label_1 = Label(root, text="Temperatur 1")
+label_2 = Label(root, text="Temperatur 2")
+label_3 = Label(root, text=TempRead1)
+label_4 = Label(root, text=TempRead2)
+entry_1 = Entry(root)
+entry_2 = Entry(root)
 
-# clear displa and move cursor to start
+label_1.grid(row=0, sticky=E)
+label_2.grid(row=1, sticky=E)
+label_3.grid(row=0, column=1)
+label_4.grid(row=1, column=1)
+entry_1.grid(row=0, column=2)
+entry_2.grid(row=1, column=2)
+
+c = Checkbutton(root, text="logged at ", text=datetime.datetime.now())
+c.grid(columnspan=2)
+
+
+
+# Write to LCD - clear displa and move cursor to start
 I2CWrite(0xFE)
 I2CWrite(0x58)
 
