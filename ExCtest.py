@@ -80,7 +80,7 @@ label_4.grid(row=1, column=1)
 entry_1.grid(row=0, column=2)
 entry_2.grid(row=1, column=2)
 
-c = Checkbutton(root, text="logged at ", text=datetime.datetime.now())
+c = Checkbutton(root, text="logged at " datetime.datetime.now())
 c.grid(columnspan=2)
 
 
