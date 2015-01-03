@@ -29,7 +29,7 @@ def I2CRead():
 
 def GoogleSubmit(value1, value2):
     try:
-    gs = gspread.login('jesperbirkp@gmail.com', 'zxkfdgmtpslbqpzg')
+        gs = gspread.login('jesperbirkp@gmail.com', 'zxkfdgmtpslbqpzg')
     except:
         print('fail')
         sys.exit
