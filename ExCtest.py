@@ -1,6 +1,7 @@
 
 import time, datetime, sys
 import gspread
+from tkinter import *
 
 sys.path.append("/home/pi/quick2wire-python-api")
 
@@ -26,7 +27,22 @@ def I2CRead():
     time.sleep(1)
     return read
 
-print('starting...')
+print('starting...')    #printing in prompt
+
+root = Tk()
+
+label_1 = Label(root, text="Temperatur 1")
+label_2 = Label(root, text="Temperatur 2")
+entry_1 = Entry(root)
+entry_2 = Entry(root)
+
+label_1.grid(row=0, sticky=E)
+label_2.grid(row=1, sticky=E)
+entry_1.grid(row=0, column=1)
+entry_2.grid(row=1, column=1)
+
+c = Checkbutton(root, text="logged at")
+c.grid(columnspan=2
 
 try:
     gs = gspread.login('jesperbirkp@gmail.com', 'zxkfdgmtpslbqpzg')
@@ -79,5 +95,6 @@ for a in range(len(Tekst2)):
 I2CWrite(0x30+(int(TempRead2/10)))
 I2CWrite(0x30+TempRead2%10)
 
-print( "Goodbye")
 var=0
+root.mainloop()
+print( "Goodbye")
