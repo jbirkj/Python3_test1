@@ -1,7 +1,7 @@
 
 import time, datetime, sys
 import gspread
-from tkinter import *
+#from tkinter import *
 
 sys.path.append("/home/pi/quick2wire-python-api")
 
@@ -11,12 +11,16 @@ from quick2wire.i2c import I2CMaster, writing_bytes, reading
 address = 0x28
 Tekst = [ 0x54, 0x65, 0x6d, 0x70, 0x31, 0x3d ]
 Tekst2 = [ 0xfe, 0x47, 0x01, 0x02, 0x54, 0x65, 0x6d, 0x70, 0x32, 0x3d ]
+
 ROMCODE1 = [ 0x28, 0xc3, 0xc2, 0x9d, 0x04, 0x00, 0x00, 0x9b]
 sRomCode1 = "40 195 194 157 4 0 0 155"
 ROMCODE5 = [ 0x28, 0xe8, 0xd4, 0x45, 0x05, 0x00, 0x00, 0x83]
 sRomCode5 = "40 232 212 69 5 0 0 131"
 ROMCODE2 = [ 0x28, 0x0c, 0x1b, 0xe0, 0x04, 0x00, 0x00, 0xb8]
 sRomCode2 = "40 12 27 224 4 0 0 184"
+ROMCODE4 = [ 0x28, 0x2f, 0x90, 0x2d, 0x04, 0x00, 0x00, 0xd9]
+sRomCode4 = "40 47 144 45 4 0 0 217"
+
 
 #//1=build into metal, 2=2nd w short wiremount, 3=3rd w long wiremount, 4=loose 18B20 
 #//5=metal tip w silicone tube
@@ -55,54 +59,49 @@ def GoogleSubmit(value1, value2):
 print('starting...')    #printing in prompt
 
 path = "./DS18b20read.a "
-path1 = path + sRomCode1
+path1 = path + sRomCode5
 path2 = path + sRomCode2
-#print(path1)
-#print(path2)
+print(path1)
+print(path2)
 
 #Starting Loop
 
-Try:
-    While TRUE:
- 
-    #proc = Popen(["sudo ./DS18b20read.a "],
-    proc = Popen(path1 ,
-                 shell=True, 
-                stdout=PIPE)
-    stdoutvalue = proc.communicate()
-    TempRead1 = eval(stdoutvalue[0])
-    print("current temperature 1 is ", TempRead1, "degree Celsius" )
-    
-    proc = Popen(path2 ,
-                 shell=True, 
-                stdout=PIPE)
-    stdoutvalue = proc.communicate()
-    TempRead2 = eval(stdoutvalue[0])
-    print("current temperature 2 is ", TempRead2, "degree Celsius" )
-    
-    GoogleSubmit(TempRead1, TempRead2)
+try:
+	while True:
+		#proc = Popen(["sudo ./DS18b20read.a "],
+		proc = Popen(path1 ,shell=True, stdout=PIPE)
+		stdoutvalue = proc.communicate()
+		TempRead1 = eval(stdoutvalue[0])
+		print("current temperature 1 is ", TempRead1, "degree Celsius" )
+		
+		proc = Popen(path2 , shell=True, stdout=PIPE)
+		stdoutvalue = proc.communicate()
+		TempRead2 = eval(stdoutvalue[0])
+		print("current temperature 2 is ", TempRead2, "degree Celsius" )
+		
+		GoogleSubmit(TempRead1, TempRead2)
 
-    # Write to LCD - clear displa and move cursor to start
-    I2CWrite(0xFE)
-    I2CWrite(0x58)
-    
-    # writing LCD line1 with temp1
-    for a in range(len(Tekst)):
-        I2CWrite(Tekst[a])
-    I2CWrite(0x30+(int(TempRead1/10)))      #I2CWrite(0x30+(int(eval(stdoutvalue[0])/10)))
-    I2CWrite(0x30+TempRead1%10)             #I2CWrite(0x30+eval(stdoutvalue[0])%10)
-    
-    # writing LCD line 2 with Temp2
-    for a in range(len(Tekst2)):
-        I2CWrite(Tekst2[a])
-    I2CWrite(0x30+(int(TempRead2/10)))
-    I2CWrite(0x30+TempRead2%10)
-    
-    time.sleep(10)
+		# Write to LCD - clear displa and move cursor to start
+		I2CWrite(0xFE)
+		I2CWrite(0x58)
+		
+		# writing LCD line1 with temp1
+		for a in range(len(Tekst)):
+			I2CWrite(Tekst[a])
+		I2CWrite(0x30+(int(TempRead1/10)))      #I2CWrite(0x30+(int(eval(stdoutvalue[0])/10)))
+		I2CWrite(0x30+TempRead1%10)             #I2CWrite(0x30+eval(stdoutvalue[0])%10)
+		
+		# writing LCD line 2 with Temp2
+		for a in range(len(Tekst2)):
+			I2CWrite(Tekst2[a])
+		I2CWrite(0x30+(int(TempRead2/10)))
+		I2CWrite(0x30+TempRead2%10)
+		
+		time.sleep(1800)
     
 except KeyboardInterrupt:
     print("program interruppted by keyboard!")
-    return
+#    return
 
 
 var=0
