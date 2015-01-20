@@ -55,6 +55,9 @@ def GoogleSubmit(value1, value2):
     #writing to Google sheet
     values = [ datetime.datetime.now(), 'sensor', value1, value2]
     wks.append_row(values)
+    
+    #wks.close()
+    
 
 print('starting...')    #printing in prompt
 
@@ -67,18 +70,19 @@ print(path2)
 #Starting Loop
 
 try:
+
 	while True:
 		#proc = Popen(["sudo ./DS18b20read.a "],
-		proc = Popen(path1 ,shell=True, stdout=PIPE)
-		stdoutvalue = proc.communicate()
+		proc1 = Popen(path1 ,shell=True, stdout=PIPE)
+		stdoutvalue = proc1.communicate()
 		TempRead1 = eval(stdoutvalue[0])
 		print("current temperature 1 is ", TempRead1, "degree Celsius" )
-		
-		proc = Popen(path2 , shell=True, stdout=PIPE)
-		stdoutvalue = proc.communicate()
+				
+		proc2 = Popen(path2 , shell=True, stdout=PIPE)
+		stdoutvalue = proc2.communicate()
 		TempRead2 = eval(stdoutvalue[0])
 		print("current temperature 2 is ", TempRead2, "degree Celsius" )
-		
+				
 		GoogleSubmit(TempRead1, TempRead2)
 
 		# Write to LCD - clear displa and move cursor to start
@@ -100,6 +104,8 @@ try:
 		time.sleep(1800)
     
 except KeyboardInterrupt:
+    #proc1.terminate()
+    #proc2.terminate()
     print("program interruppted by keyboard!")
 #    return
 
