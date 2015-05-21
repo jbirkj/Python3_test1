@@ -65,7 +65,7 @@ print('starting...')    #printing in prompt
 path = "./DS18b20read.a "
 path1 = path + sRomCode5
 path2 = path + sRomCode2
-path3 = path + sRomCOde3
+path3 = path + sRomCode3
 print(path1)
 print(path2)
 print(path3)
