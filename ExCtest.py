@@ -45,7 +45,7 @@ def I2CRead():
     time.sleep(1)
     return read
 
-def GoogleSubmit(value1, value2):
+def GoogleSubmit(value1, value2, value3):
     try:
         gs = gspread.login('jesperbirkp@gmail.com', 'zxkfdgmtpslbqpzg')
     except:
@@ -54,7 +54,7 @@ def GoogleSubmit(value1, value2):
     wks = gs.open("TempLog1").sheet1
     
     #writing to Google sheet
-    values = [ datetime.datetime.now(), 'sensor', value1, value2]
+    values = [ datetime.datetime.now(), 'sensor', value1, value2, value3]
     wks.append_row(values)
     
     #wks.close()
@@ -65,8 +65,10 @@ print('starting...')    #printing in prompt
 path = "./DS18b20read.a "
 path1 = path + sRomCode5
 path2 = path + sRomCode2
+path3 = path + sRomCOde3
 print(path1)
 print(path2)
+print(path3)
 
 #Starting Loop
 
@@ -84,7 +86,12 @@ try:
 		TempRead2 = eval(stdoutvalue[0])
 		print("current temperature 2 is ", TempRead2, "degree Celsius" )
 				
-		GoogleSubmit(TempRead1, TempRead2)
+		proc3 = Popen(path3 , shell=True, stdout=PIPE)
+		stdoutvalue = proc3.communicate()
+		TempRead3 = eval(stdoutvalue[0])
+		print("current temperature 3 is ", TempRead3, "degree Celsius" )
+		
+		GoogleSubmit(TempRead1, TempRead2, TempRead3)
 
 		# Write to LCD - clear displa and move cursor to start
 		I2CWrite(0xFE)
