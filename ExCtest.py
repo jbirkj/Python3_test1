@@ -1,22 +1,27 @@
 
 import time, datetime, sys
 import gspread
-from tkinter import *
+import json
+#from tkinter import *
 
 sys.path.append("/home/pi/quick2wire-python-api")
 
 from subprocess import Popen, PIPE
 from quick2wire.i2c import I2CMaster, writing_bytes, reading
+from oauth2client import SignedJwtAssertionCredentials
 
 address = 0x28
 Tekst = [ 0x54, 0x65, 0x6d, 0x70, 0x31, 0x3d ]
 Tekst2 = [ 0xfe, 0x47, 0x01, 0x02, 0x54, 0x65, 0x6d, 0x70, 0x32, 0x3d ]
+
 ROMCODE1 = [ 0x28, 0xc3, 0xc2, 0x9d, 0x04, 0x00, 0x00, 0x9b]
 sRomCode1 = "40 195 194 157 4 0 0 155"
 ROMCODE5 = [ 0x28, 0xe8, 0xd4, 0x45, 0x05, 0x00, 0x00, 0x83]
 sRomCode5 = "40 232 212 69 5 0 0 131"
 ROMCODE2 = [ 0x28, 0x0c, 0x1b, 0xe0, 0x04, 0x00, 0x00, 0xb8]
 sRomCode2 = "40 12 27 224 4 0 0 184"
+ROMCODE4 = [ 0x28, 0x2f, 0x90, 0x2d, 0x04, 0x00, 0x00, 0xd9]
+sRomCode4 = "40 47 144 45 4 0 0 217"
 ROMCODE3 = [ 0x28, 0xa6, 0xd8, 0x9c, 0x04, 0x00, 0x00, 0xfd]
 sRomCode3 = "40 166 216 156 4 0 0 253"
 
@@ -31,7 +36,7 @@ sRomCode3 = "40 166 216 156 4 0 0 253"
 #cROMCODE1[6]=0x00;	cROMCODE2[6]=0x00;	cROMCODE3[6]=0x00;	cROMCODE4[6]=0x00;	cROMCODE5[6]=0x0;
 #cROMCODE1[7]=0x9b;	cROMCODE2[7]=0xb8;	cROMCODE3[7]=0xfd;	cROMCODE4[7]=0xd9;	cROMCODE5[7]=0x83;
 
-def I2CWrite(value1) :
+def I2CWrite(value1):
     I2CMaster().transaction( writing_bytes(address, value1) )
     time.sleep(0.1)
     return 1
@@ -42,69 +47,110 @@ def I2CRead():
     time.sleep(1)
     return read
 
-def GoogleSubmit(value1, value2):
+def GoogleSubmit(value1, value2, value3):
     try:
-        gs = gspread.login('jesperbirkp@gmail.com', 'zxkfdgmtpslbqpzg')
+        json_key = json.load(open('FirstTry-9812f271aca5.json'))
+        scope = ['https://spreadsheet.google.com/feeds']
+
+        credentials = SignedJwtAssertionCredentials(json_key['84514589791-d5tf89dts52hq9m9vs9dkp9um1d6s99r@developer.gserviceaccount.com'], json_key['-----BEGIN PRIVATE KEY-----\nMIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBANGjuDYwg3cqTr5r\nWj7jaGK1actARnF8749GMnc2OwEa3dFNBhLPw/eZlFloxvS6T7HMpBIw25yyi/CI\nGXhhxEjwE85N3jNz+1CVbJmX8T023dD/wb1fx5Lb2o4OCN54vPNG1JqcLzUJ2gUq\nkPemG9L66Jpcnk5tZZx5CYNUuKI/AgMBAAECgYEAl1dqFTTQs6aHUlCNxfjF0vzE\nc0bjk+ptxzEWHZm43wNWP1Mrn0j+YDEvN5y8hNA72E+z4q4C3QzImcynFpD98Zrw\noixBmwkfxgObfuvHSchwPvXMpMX8bwIqQLXJRsqmPwmVdoOmQvO7wcvS3gXRbCmi\nA6igk/oIzoxWSspuLQECQQDz9wKf28uYkZdjbxeOgap4A1d2ficOkLaCSoctXcux\nAFwzxJvAVIg/hAFTpNaUPS8zDWW04AgVXdH/YNRUOjAZAkEA2/s4bwyrJ13eDr8T\nAmPE35xcah7+4nq1OdOKCZBXJxIo3cuDyZq/WYlpAPjjjhtRTV0U6Vf2YODfZfr6\nJPrQFwJBAKNWj9VDrU5au8cBC/6HZgCwDBDzaWbhELCvAU4obEX3fcPTMIxWjFoq\nIVFFHb1mMYG2yI+PJxpXFFAtHju+MZECQBIBOdk8/DU4pZgnY3Lqn459ycKVzt7S\nlEqrWbz2p2t3PQkKQzsZA1hcus9tj5JuAfWHDNMcc/nx7db298pXDPkCQAhEkkvJ\nbxN2B/xvECBaazxAmD6gsQZcgRHNTFg1Fi/HUcIjW49XKLDI8iyx+yYdAj1IWxpu\nGC+R7d1VDXxG3CU\u003d\n-----END PRIVATE KEY-----\n'], scope)
+        gs = gspread.authorize(credentials)
+        #gs = gspread.login('jesperbirkp@gmail.com', 'juvljxtynppoxxco')
+        #gs = gspread.login('jesperbirkp@gmail.com', 'zxkfdgmtpslbqpzg')
     except:
-        print('fail')
+        print('failed to open Google sheet')
         sys.exit
     wks = gs.open("TempLog1").sheet1
     
     #writing to Google sheet
-    values = [ datetime.datetime.now(), 'sensor', value1, value2]
+    values = [ datetime.datetime.now(), 'sensor', value1, value2, value3]
     wks.append_row(values)
+    
+    #wks.close()
+    
 
 print('starting...')    #printing in prompt
 
+
+
 path = "./DS18b20read.a "
-path1 = path + sRomCode1
+path1 = path + sRomCode5
 path2 = path + sRomCode2
-#print(path1)
-#print(path2)
+path3 = path + sRomCode3
+print(path1)
+print(path2)
+print(path3)
 
 #Starting Loop
 
-Try:
-    While TRUE:
- 
-    #proc = Popen(["sudo ./DS18b20read.a "],
-    proc = Popen(path1 ,
-                 shell=True, 
-                stdout=PIPE)
-    stdoutvalue = proc.communicate()
-    TempRead1 = eval(stdoutvalue[0])
-    print("current temperature 1 is ", TempRead1, "degree Celsius" )
-    
-    proc = Popen(path2 ,
-                 shell=True, 
-                stdout=PIPE)
-    stdoutvalue = proc.communicate()
-    TempRead2 = eval(stdoutvalue[0])
-    print("current temperature 2 is ", TempRead2, "degree Celsius" )
-    
-    GoogleSubmit(TempRead1, TempRead2)
+try:
+	'''
+	# Write to LCD - clear displa and move cursor to start
+	I2CWrite(0xFE)
+	I2CWrite(0x58)
+	
+	TempRead1 = 222
+	TempRead2 = 333
+	
+	# writing LCD line1 with temp1
+	for a in range(len(Tekst)):
+		I2CWrite(Tekst[a])
+	I2CWrite(0x30+(int(TempRead1/10)))      #I2CWrite(0x30+(int(eval(stdoutvalue[0])/10)))
+	I2CWrite(0x30+TempRead1%10)             #I2CWrite(0x30+eval(stdoutvalue[0])%10)
+	
+	# writing LCD line 2 with Temp2
+	for a in range(len(Tekst2)):
+		I2CWrite(Tekst2[a])
+	I2CWrite(0x30+(int(TempRead2/10)))
+	I2CWrite(0x30+TempRead2%10)
+	
+	time.sleep(1)
+	'''
 
-    # Write to LCD - clear displa and move cursor to start
-    I2CWrite(0xFE)
-    I2CWrite(0x58)
-    
-    # writing LCD line1 with temp1
-    for a in range(len(Tekst)):
-        I2CWrite(Tekst[a])
-    I2CWrite(0x30+(int(TempRead1/10)))      #I2CWrite(0x30+(int(eval(stdoutvalue[0])/10)))
-    I2CWrite(0x30+TempRead1%10)             #I2CWrite(0x30+eval(stdoutvalue[0])%10)
-    
-    # writing LCD line 2 with Temp2
-    for a in range(len(Tekst2)):
-        I2CWrite(Tekst2[a])
-    I2CWrite(0x30+(int(TempRead2/10)))
-    I2CWrite(0x30+TempRead2%10)
-    
-    time.sleep(10)
+
+
+	while True:
+		#proc = Popen(["sudo ./DS18b20read.a "],
+		proc1 = Popen(path1 ,shell=True, stdout=PIPE)
+		stdoutvalue = proc1.communicate()
+		TempRead1 = eval(stdoutvalue[0])
+		print("current temperature 1 is ", TempRead1, "degree Celsius" )
+				
+		proc2 = Popen(path2 , shell=True, stdout=PIPE)
+		stdoutvalue = proc2.communicate()
+		TempRead2 = eval(stdoutvalue[0])
+		print("current temperature 2 is ", TempRead2, "degree Celsius" )
+				
+		proc3 = Popen(path3 , shell=True, stdout=PIPE)
+		stdoutvalue = proc3.communicate()
+		TempRead3 = eval(stdoutvalue[0])
+		print("current temperature 3 is ", TempRead3, "degree Celsius" )
+		
+		GoogleSubmit(TempRead1, TempRead2, TempRead3)
+#		GoogleSubmit(TempRead1, TempRead2, 80)
+
+		# Write to LCD - clear displa and move cursor to start
+		I2CWrite(0xFE)
+		I2CWrite(0x58)
+		
+		# writing LCD line1 with temp1
+		for a in range(len(Tekst)):
+			I2CWrite(Tekst[a])
+		I2CWrite(0x30+(int(TempRead1/10)))      #I2CWrite(0x30+(int(eval(stdoutvalue[0])/10)))
+		I2CWrite(0x30+TempRead1%10)             #I2CWrite(0x30+eval(stdoutvalue[0])%10)
+		
+		# writing LCD line 2 with Temp2
+		for a in range(len(Tekst2)):
+			I2CWrite(Tekst2[a])
+		I2CWrite(0x30+(int(TempRead2/10)))
+		I2CWrite(0x30+TempRead2%10)
+		
+		time.sleep(5)
     
 except KeyboardInterrupt:
+    #proc1.terminate()
+    #proc2.terminate()
     print("program interruppted by keyboard!")
-    return
+#    return
 
 
 var=0
