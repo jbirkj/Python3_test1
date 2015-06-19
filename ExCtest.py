@@ -3,14 +3,14 @@ import time, datetime, sys
 import gspread
 #from tkinter import *
 
-sys.path.append("/home/pi/quick2wire-python-api")
+sys.path.append("/home/pi/git/quick2wire-python-api")
 
 from subprocess import Popen, PIPE
 from quick2wire.i2c import I2CMaster, writing_bytes, reading
 
 address = 0x28
 Tekst = [ 0x54, 0x65, 0x6d, 0x70, 0x31, 0x3d ]		#"Temp1="
-Tekst1 = [ 0x20 0x54, 0x65, 0x6d, 0x70, 0x33, 0x3d ]	#" Temp3="
+Tekst1 = [ 0x20, 0x54, 0x65, 0x6d, 0x70, 0x33, 0x3d ]	#" Temp3="
 Tekst2 = [ 0xfe, 0x47, 0x01, 0x02, 0x54, 0x65, 0x6d, 0x70, 0x32, 0x3d ]  # næste linie, pos 1, "Temp2="
 
 ROMCODE1 = [ 0x28, 0xc3, 0xc2, 0x9d, 0x04, 0x00, 0x00, 0x9b]
@@ -92,7 +92,7 @@ try:
 		TempRead3 = eval(stdoutvalue[0])
 		print("current temperature 3 is ", TempRead3, "degree Celsius" )
 		
-		GoogleSubmit(TempRead1, TempRead2, TempRead3)
+		#GoogleSubmit(TempRead1, TempRead2, TempRead3)
 
 		# Write to LCD - clear displa and move cursor to start
 		I2CWrite(0xFE)
