@@ -9,8 +9,9 @@ from subprocess import Popen, PIPE
 from quick2wire.i2c import I2CMaster, writing_bytes, reading
 
 address = 0x28
-Tekst = [ 0x54, 0x65, 0x6d, 0x70, 0x31, 0x3d ]
-Tekst2 = [ 0xfe, 0x47, 0x01, 0x02, 0x54, 0x65, 0x6d, 0x70, 0x32, 0x3d ]
+Tekst = [ 0x54, 0x65, 0x6d, 0x70, 0x31, 0x3d ]		#"Temp1="
+Tekst1 = [ 0x20 0x54, 0x65, 0x6d, 0x70, 0x33, 0x3d ]	#" Temp3="
+Tekst2 = [ 0xfe, 0x47, 0x01, 0x02, 0x54, 0x65, 0x6d, 0x70, 0x32, 0x3d ]  # næste linie, pos 1, "Temp2="
 
 ROMCODE1 = [ 0x28, 0xc3, 0xc2, 0x9d, 0x04, 0x00, 0x00, 0x9b]
 sRomCode1 = "40 195 194 157 4 0 0 155"
@@ -97,11 +98,17 @@ try:
 		I2CWrite(0xFE)
 		I2CWrite(0x58)
 		
-		# writing LCD line1 with temp1
+		# writing LCD line1 with "Temp1="
 		for a in range(len(Tekst)):
 			I2CWrite(Tekst[a])
-		I2CWrite(0x30+(int(TempRead1/10)))      #I2CWrite(0x30+(int(eval(stdoutvalue[0])/10)))
-		I2CWrite(0x30+TempRead1%10)             #I2CWrite(0x30+eval(stdoutvalue[0])%10)
+		I2CWrite(0x30+(int(TempRead1/10)))      
+		I2CWrite(0x30+TempRead1%10)             
+		
+		#cont line wirting " Temp3=
+		for a in range(len(Tekst1)):
+			I2CWrite(Tekst1[a])
+		I2CWrite(0x30+(int(TempRead3/10)))      
+		I2CWrite(0x30+TempRead3%10)             
 		
 		# writing LCD line 2 with Temp2
 		for a in range(len(Tekst2)):
