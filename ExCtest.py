@@ -1,6 +1,7 @@
 
 import time, datetime, sys
 import gspread
+import Logging
 #from tkinter import *
 
 sys.path.append("/home/pi/git/quick2wire-python-api")
@@ -71,6 +72,10 @@ print(path1)
 print(path2)
 print(path3)
 
+# creating lof file
+logFileName = datetime.datetime.now().strftime("%y%m%d") + "FermentLogFile.csv"
+textLogInit(logFileName)
+
 #Starting Loop
 
 try:
@@ -93,6 +98,8 @@ try:
 		print("current temperature 3 is ", TempRead3, "degree Celsius" )
 		
 		#GoogleSubmit(TempRead1, TempRead2, TempRead3)
+		textLog(logFileName, datetime.datetime.now(), TempRead1, TempRead2, TempRead3 )
+
 
 		# Write to LCD - clear displa and move cursor to start
 		I2CWrite(0xFE)
