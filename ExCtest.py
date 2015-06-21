@@ -1,13 +1,14 @@
 
 import time, datetime, sys
 import gspread
-import Logging
 #from tkinter import *
 
 sys.path.append("/home/pi/git/quick2wire-python-api")
 
 from subprocess import Popen, PIPE
 from quick2wire.i2c import I2CMaster, writing_bytes, reading
+
+from Logging import textLog, textLogInit
 
 address = 0x28
 Tekst = [ 0x54, 0x65, 0x6d, 0x70, 0x31, 0x3d ]		#"Temp1="
@@ -123,7 +124,7 @@ try:
 		I2CWrite(0x30+(int(TempRead2/10)))
 		I2CWrite(0x30+TempRead2%10)
 		
-		time.sleep(1800)
+		time.sleep(5)
     
 except KeyboardInterrupt:
     #proc1.terminate()
