@@ -2,6 +2,8 @@
 import time, datetime, sys
 import gspread
 import json
+
+import csv
 #from tkinter import *
 
 sys.path.append("/home/pi/quick2wire-python-api")
@@ -47,6 +49,13 @@ def I2CRead():
     time.sleep(1)
     return read
 
+def textLog(FN, T, V1, V2, V3):
+	fileH = open(	FN, 'a', newline='') #open with append option to add data to existing file
+	fObj = csv.writer(fileH)
+	fObj.writerow( [T, V1, V2, V3] )
+	del fObj
+	fileH.close()
+
 def GoogleSubmit(value1, value2, value3):
     try:
         json_key = json.load(open('FirstTry-9812f271aca5.json'))
@@ -83,38 +92,22 @@ print(path3)
 #Starting Loop
 
 try:
-	'''
-	# Write to LCD - clear displa and move cursor to start
-	I2CWrite(0xFE)
-	I2CWrite(0x58)
-	
-	TempRead1 = 222
-	TempRead2 = 333
-	
-	# writing LCD line1 with temp1
-	for a in range(len(Tekst)):
-		I2CWrite(Tekst[a])
-	I2CWrite(0x30+(int(TempRead1/10)))      #I2CWrite(0x30+(int(eval(stdoutvalue[0])/10)))
-	I2CWrite(0x30+TempRead1%10)             #I2CWrite(0x30+eval(stdoutvalue[0])%10)
-	
-	# writing LCD line 2 with Temp2
-	for a in range(len(Tekst2)):
-		I2CWrite(Tekst2[a])
-	I2CWrite(0x30+(int(TempRead2/10)))
-	I2CWrite(0x30+TempRead2%10)
-	
-	time.sleep(1)
-	'''
 
-
-
+	logFileName = datetime.datetime.now().strftime("%y%m%d") + "FermentLogFile.csv"
+	filehandler = open(	logFileName, 'w', newline='') #option w creates new file for Writing
+	fileObject = csv.writer(filehandler)
+	fileObject.writerow( [datetime.datetime.now(), 0, 0, 0] )
+	del fileObject
+	filehandler.close()
+	
 	while True:
 		#proc = Popen(["sudo ./DS18b20read.a "],
+
 		proc1 = Popen(path1 ,shell=True, stdout=PIPE)
 		stdoutvalue = proc1.communicate()
 		TempRead1 = eval(stdoutvalue[0])
 		print("current temperature 1 is ", TempRead1, "degree Celsius" )
-				
+
 		proc2 = Popen(path2 , shell=True, stdout=PIPE)
 		stdoutvalue = proc2.communicate()
 		TempRead2 = eval(stdoutvalue[0])
@@ -125,8 +118,10 @@ try:
 		TempRead3 = eval(stdoutvalue[0])
 		print("current temperature 3 is ", TempRead3, "degree Celsius" )
 		
-		GoogleSubmit(TempRead1, TempRead2, TempRead3)
+#		GoogleSubmit(TempRead1, TempRead2, TempRead3)
 #		GoogleSubmit(TempRead1, TempRead2, 80)
+#		fileObject.writerow( [datetime.datetime.now(), TempRead1, TempRead2, TempRead3] )
+		textLog( logFileName, datetime.datetime.now(), TempRead1, TempRead2, TempRead3 )
 
 		# Write to LCD - clear displa and move cursor to start
 		I2CWrite(0xFE)
@@ -149,7 +144,11 @@ try:
 except KeyboardInterrupt:
     #proc1.terminate()
     #proc2.terminate()
+    del fileObject
+    filehandler.close()
+
     print("program interruppted by keyboard!")
+
 #    return
 
 
