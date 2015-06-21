@@ -1,5 +1,5 @@
 # module for logging data somwhere
-
+import csv
 
 def GoogleSubmit(value1, value2, value3):
     try:
@@ -16,5 +16,11 @@ def GoogleSubmit(value1, value2, value3):
     #wks.close() 
 
 
-def FileLogging(v1, v2, v3):
+def textLog(T, V1, V2, V3):
+	logFileName = datetime.datetime.now().strftime("%y%m%d") + "FermentLogFile.csv"
+	fileH = open(	logFileName, 'a', newline='') #open with append option to add data to existing file
+	fObj = csv.writer(fileH)
+	fObj.writerow( [T, V1, V2, V3] )
+	del fObj
+	fileH.close()
 	
